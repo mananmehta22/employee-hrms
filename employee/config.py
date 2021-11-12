@@ -20,7 +20,7 @@ load_dotenv(dotenv_path)
 
 
 # Service information
-SERVICE_NAME = 'hrms'
+SERVICE_NAME = 'employee'
 SERVICE_VERSION = '1.0.0'
 os.environ['SERVICE_NAME'] = SERVICE_NAME
 
