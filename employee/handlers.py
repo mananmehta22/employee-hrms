@@ -19,13 +19,13 @@ def get_employee():
 
 @app.route('/employee/<id>/salary', methods = 'GET')
 def get_salary():
-    return flaskify()
+    return flaskify(emp_info.get_emp_salary())
 
 @app.route('/employee/<department>', methods = 'GET')
 def single_department():
-    return flaskify()
+    return flaskify(emp_info.get_emp_dept())
 
-@app.route('/employee/<manager>', methods = 'GET')
+@app.route('/employee/salary-range', methods = 'GET')
 def get_manager():
-    return flaskify()
+    return flaskify(emp_info.get_salary_range())
 
