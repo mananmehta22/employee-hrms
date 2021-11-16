@@ -12,7 +12,7 @@ from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import func
 from sqlalchemy import Integer
-from sqlalchemy import String
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 from employee.connectors import mysql
@@ -52,7 +52,7 @@ class Salaries(mysql.BaseModel):
     __tablename__ = 'salaries'
 
 
-    emp_no = Column(Integer(11), primary_key=True, nullable=False, ForeignKey('employees.emp_no'))
+    emp_no = Column(Integer(11), ForeignKey('employees.emp_no'), primary_key=True)
     salary = Column(Integer(11),primary_key=True, nullable=False)
     from_date = Column(Date(), nullable=False)
     to_date = Column(Date(), nullable=False)
@@ -72,9 +72,9 @@ class Titles(mysql.BaseModel):
     __tablename__ = 'titles'
 
 
-    emp_no = Column(Integer(11), primary_key=True, nullable=False, ForeignKey('employees.emp_no'))
+    emp_no = Column(Integer(11), ForeignKey('employees.emp_no'), primary_key=True, nullable=False)
     title = Column(VARCHAR(50),primary_key=True, nullable=False)
-    from_date = Column(Date() nullable=False)
+    from_date = Column(Date(), nullable=False)
     to_date = Column(Date(), nullable=False)
 
     parent_2 = relationship("Employees", back_populates="children_2")
@@ -91,14 +91,14 @@ class Dept_emp(mysql.BaseModel):
     __tablename__ = 'dept_emp'
 
 
-    emp_no = Column(Integer(11), primary_key=True, nullable=False, ForeignKey('employees.emp_no'))
-    dept_no = Column(CHAR(4),primary_key=True, nullable=False, ForeignKey('departments.dept_no'))
+    emp_no = Column(Integer(11),ForeignKey('employees.emp_no'), primary_key=True, nullable=False)
+    dept_no = Column(CHAR(4), ForeignKey('departments.dept_no'), primary_key=True, nullable=False)
     from_date = Column(Date(), nullable=False)
     to_date = Column(Date(), nullable=False)
 
 
-parent_3 = relationship("Employees", back_populates="children_3")
-parent_5 = relationship("Departments", back_populates="children_4")
+    parent_3 = relationship("Employees", back_populates="children_3")
+    parent_5 = relationship("Departments", back_populates="children_4")
 
 
     def __init__(self, emp_no, dept_no, from_date, to_date):
@@ -113,7 +113,7 @@ class Dept_Manager(mysql.BaseModel):
 
 
     manager_id = Column(Integer(11), primary_key=True, nullable=False)
-    dept_no = Column(CHAR(4), primary_key=True, nullable=False, ForeignKey('departments.dept_no'))
+    dept_no = Column(CHAR(4), ForeignKey('departments.dept_no'),primary_key=True, nullable=False)
     emp_no = Column(Integer(11),primary_key=True, nullable=False)
     from_date = Column(Date(20), nullable=False)
     to_date = Column(Date(10), nullable=False)
@@ -148,8 +148,8 @@ class Leaves(mysql.BaseModel):
 
     __tablename__ = 'leaves'
 
-    emp_no = Column(Integer(11), primary_key=True, nullable=False), ForeignKey('employees.emp_no')
-    dept_no = Column(CHAR(4),primary_key=True, nullable=False, ForeignKey('departments.dept_no'))
+    emp_no = Column(Integer(11), ForeignKey('employees.emp_no'), primary_key=True, nullable=False)
+    dept_no = Column(CHAR(4), ForeignKey('departments.dept_no'), primary_key=True, nullable=False)
     leaves_taken = Column(Integer(2))
     leaves_left = Column(Integer(2))
     leaves_without_pay = Column(Integer(2), primary_key=True)
@@ -169,13 +169,13 @@ class Leaves(mysql.BaseModel):
 @mysql.wrap_db_errors
 def get_emp(emp_id):
      with mysql.db_read_session() as session:
-         sql = 'SELECT * \
+        sql = 'SELECT * \
             FROM employees \
             WHERE emp_no = {employee_id};'.format(employee_id=emp_id)
-            emp_response = session.execute(sql)
-            result = emp_response.fetchall()
-            result_obj = json.loads(json.dumps(result))
-            return response.Response(message=result_obj)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        result_obj = json.loads(json.dumps(result))
+        return response.Response(message=result_obj)
 
 @mysql.wrap_db_errors
 def get_emp_salary(emp_id, emp_salary):
@@ -184,10 +184,10 @@ def get_emp_salary(emp_id, emp_salary):
             FROM  employees a \
             INNER JOIN salaries b \
             ON emp_no = {employee_id} AND salary = {employee_salary};'.format(employee_id=emp_id, employee_salary = emp_salary)
-            emp_response = session.execute(sql)
-            result = emp_response.fetchall()
-            result_obj = json.loads(json.dumps(result))
-            return response.Response(message=result_obj)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        result_obj = json.loads(json.dumps(result))
+        return response.Response(message=result_obj)
 
 
 @mysql.wrap_db_errors
