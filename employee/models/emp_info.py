@@ -191,12 +191,12 @@ def get_emp_salary(emp_id, emp_salary):
 
 
 @mysql.wrap_db_errors
-def get_emp_by_manager():
+def get_emp_by_manager(manager_id):
     with mysql.db_read_session() as session:
-        sql = ' SELECT a.first_name, a.last_name, b.dept_no, c.first_name, c.last_name, COUNT (b.emp_no) AS number of employees \
+        sql = ' SELECT a.first_name, a.last_name, b.dept_no, b.manager_id, COUNT (b.emp_no) AS number of employees \
         FROM employees a \
-        LEFT JOIN  dept_manager b ON a.emp_id = b.emp_id  \
-        LEFT JOIN employees c ON b.manager_id = c.emp_id;'
+        LEFT JOIN  dept_manager b ON a.emp_no = b.emp_no \
+        GROUP BY b.manager_id = {manage_id};'.format(manage_id = manager_id)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         result_obj = json.loads(json.dumps(result))
@@ -219,18 +219,36 @@ def get_emp_dept():
 def get_salary_range(start, end):
     with mysql.db_read_session() as session:
         sql = ' SELECT * FROM employees \
-        WHERE salary BETWEEN first = {start} and last = {end};'.format(first=start, last=end) '
+        WHERE salary BETWEEN first = {start} and last = {end};'.format(first=start, last=end)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         result_obj = json.loads(json.dumps(result))
         return response.Response(message=result_obj)
 
 
-'''@mysql.wrap_db_errors
-def get_leaves_employee():
+@mysql.wrap_db_errors
+def get_manager_dept(manager_id, dept_no):
     with mysql.db_read_session() as session:
-        sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.leaves_taken
-        
-        '
+        sql = ' SELECT a.first_name, a.last_name, b.dept_no, b.manager_id \
+            FROM employees a \
+            LEFT JOIN dept_manager b ON a.emp_no = b.emp_no \
+            GROUP BY b.dept_no = {department_no}, b.manager_id = {manage_id};'.format(department_no = dept_no, manager_id = manager_id)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        result_obj = json.loads(json.dumps(result))
+        return response.Response(message=result_obj)
 
-'''
+
+@mysql.wrap_db_errors
+def get_leaves_employee(emp_no):
+    with mysql.db_read_session() as session:
+        sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.leaves_taken, b.leaves_left \
+            FROM employees a \
+            LEFT JOIN leaves b ON a.emp_no = b.emp_no \
+            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        result_obj = json.loads(json.dumps(result))
+        return response.Response(message=result_obj)
+
+
