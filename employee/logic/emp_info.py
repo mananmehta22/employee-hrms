@@ -3,10 +3,11 @@ from time import time
 
 from flask import current_app, g, request, response
 from flask.globals import request
-from flask_executor import Executor
 
 
 from employee.models import emp_info
+from employee.connectors import mysql
+
 
 def get_emp(emp_id):
     result = emp_info.get_emp(emp_id)
@@ -102,6 +103,15 @@ def get_leaves_employee(emp_no):
             message='No such record present')
     return result
 
-        
+def leaves_without_pay():
+    leaves_available = emp_info.get_leaves_left()
+    leaves_applied = emp_info.get_leaves_taken()
+    leaves_w_pay = emp_info.get_leaves_without_pay()
 
-    
+    if leaves_available < leaves_applied:
+        r = request.post('https://localhost/leaves_without_pay', params={'q': leaves_w_pay})
+        return ("Your number of leaves are 0 and your leaves without pay are",  leaves_w_pay)
+
+    else:
+        s = request.post('https://localhost/leaves_taken', params={'q': leaves_applied})
+        return ("Leaves are added, your balance leaves are", leaves_available)

@@ -1,7 +1,7 @@
 import datetime
 import decimal
 import json
-from flask.globals import request
+from flask.globals import request, response
 
 from sqlalchemy.sql.sqltypes import CHAR, INTEGER, VARCHAR, Date
 
@@ -251,4 +251,39 @@ def get_leaves_employee(emp_no):
         result_obj = json.loads(json.dumps(result))
         return response.Response(message=result_obj)
 
+@mysql.wrap_db_errors
+def get_leaves_left(emp_no):
+    with mysql.db_read_session() as session:
+        sql = ' SELECT b.leaves_left \
+            FROM employees a \
+            LEFT JOIN leaves b ON a.emp_no = b.emp_no \
+            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        result_obj = json.loads(json.dumps(result))
+        return response.Response(message=result_obj)
 
+@mysql.wrap_db_errors
+def get_leaves_taken(emp_no):
+    with mysql.db_read_session() as session:
+        sql = ' SELECT b.leaves_taken \
+            FROM employees a \
+            LEFT JOIN leaves b ON a.emp_no = b.emp_no \
+            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        result_obj = json.loads(json.dumps(result))
+        return response.Response(message=result_obj)
+
+@mysql.wrap_db_errors
+def get_leaves_without_pay(emp_no):
+    with mysql.db_read_session() as session:
+        sql = ' SELECT b.leaves_without_pay \
+            FROM employees a \
+            LEFT JOIN leaves b ON a.emp_no = b.emp_no \
+            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        result_obj = json.loads(json.dumps(result))
+        return response.Response(message=result_obj)
+        
