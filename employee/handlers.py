@@ -53,5 +53,9 @@ def get_leaves_without_pay():
 def get_leaves_taken():
     return flask(emp_info.get_leaves_without_pay)
 
+@app.route('/employee/add-employee', methods = ['PUT', 'GET'])
+def add_employee():
+    return flask(emp_info.set_employee)
+
 
 

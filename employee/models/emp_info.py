@@ -1,5 +1,3 @@
-import datetime
-import decimal
 import json
 from flask.globals import request, response
 
@@ -33,7 +31,6 @@ class Employees(mysql.BaseModel):
     
     children_1 = relationship("Salaries", back_populates="parent_1")
     children_2 = relationship("Titles", back_populates="parent_2")
-    children_3 = relationship("Dept_Manager", back_populates="parent_3")
     children_4 = relationship("Leaves", back_populates="parent_4")
 
 
@@ -86,27 +83,6 @@ class Titles(mysql.BaseModel):
         self.from_date = from_date
         self.to = to_date
 
-class Dept_emp(mysql.BaseModel):
-
-    __tablename__ = 'dept_emp'
-
-
-    emp_no = Column(Integer(11),ForeignKey('employees.emp_no'), primary_key=True, nullable=False)
-    dept_no = Column(CHAR(4), ForeignKey('departments.dept_no'), primary_key=True, nullable=False)
-    from_date = Column(Date(), nullable=False)
-    to_date = Column(Date(), nullable=False)
-
-
-    parent_3 = relationship("Employees", back_populates="children_3")
-    parent_5 = relationship("Departments", back_populates="children_4")
-
-
-    def __init__(self, emp_no, dept_no, from_date, to_date):
-        self.emp_no = emp_no
-        self.dept_no = dept_no
-        self.from_date = from_date
-        self.to = to_date
-
 class Dept_Manager(mysql.BaseModel):
 
     __tablename__ = 'dept_manager'
@@ -132,15 +108,16 @@ class Departments(mysql.BaseModel):
 
     __tablename__ = 'departments'
 
+    emp_no = Column(Integer(11), ForeignKey('employees.emp_no'), primary_key=True, nullable=False)
     dept_no = Column(CHAR(4), primary_key=True, nullable=False)
     dept_name = Column(VARCHAR(11), nullable=False)
 
-    children_5 = relationship("Dept_emp", back_populates="parent_4")
     children_6 = relationship("Dept_Manager", back_populates="parent_5")
     children_7 = relationship("Leaves", back_populates="parent_6")
 
 
-    def __init__(self, dept_no, dept_name):
+    def __init__(self, emp_no, dept_no, dept_name):
+        self.emp_no = emp_no
         self.dept_no = dept_no
         self.dept_name = dept_name
 
@@ -287,3 +264,13 @@ def get_leaves_without_pay(emp_no):
         result_obj = json.loads(json.dumps(result))
         return response.Response(message=result_obj)
         
+@mysql.wrap_db_errors
+def set_employee(emp_id, f_name, l_name, b_date, gen, h_date, sal, dept_id):
+    with mysql.db_read_session() as session:
+        sql = ' UPDATE employees, departments, salaries \
+        SET first_name = {first_name}, last_name = {last_name}, birth_date = {birth_date}, gender_date = {gender_date}, hire_date = {hire_date}, salary = {salary}, dept_no = {dept_no} \
+        WHERE emp_no = {emp_no};'.format(emp_no=emp_id, first_name = f_name, last_name = l_name, birth_date = b_date, gender = gen, hire_date = h_date, salary = sal, dept_no = dept_id)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        result_obj = json.loads(json.dumps(result))
+        return response.Response(message=result_obj)

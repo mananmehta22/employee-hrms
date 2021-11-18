@@ -115,3 +115,6 @@ def leaves_without_pay():
     else:
         s = request.post('https://localhost/leaves_taken', params={'q': leaves_applied})
         return ("Leaves are added, your balance leaves are", leaves_available)
+
+def set_employee():
+    return(emp_info.set_employee)

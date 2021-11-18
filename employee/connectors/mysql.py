@@ -6,8 +6,7 @@ Manages interactions with MySQL.
 from contextlib import contextmanager
 import functools
 
-from flask import g
-from owsresponse import response
+from flask import g, response
 from sqlalchemy import create_engine
 from sqlalchemy import exc
 from sqlalchemy.ext.declarative import declarative_base
@@ -36,16 +35,6 @@ BaseModel = declarative_base()
 
 @contextmanager
 def db_session():
-    """Provide a transactional scope around a series of operations.
-
-    Taken from http://docs.sqlalchemy.org/en/latest/orm/session_basics.html.
-    This handles rollback and closing of session, so there is no need
-    to do that throughout the code.
-
-    Usage:
-        with db_session() as session:
-            session.execute(query)
-    """
     session = _db_session()
     try:
         yield session
@@ -59,15 +48,6 @@ def db_session():
 
 @contextmanager
 def db_read_session():
-    """Provide a read scope around a series of operations.
-
-    This handles closing of session.
-    No commit or rollback so use only for SELECT queries.
-
-    Usage:
-        with db_session() as session:
-            session.execute(query)
-    """
     session = _db_session()
     try:
         yield session
@@ -75,29 +55,3 @@ def db_read_session():
         raise
     finally:
         session.close()
-
-
-def wrap_db_errors(function):
-    """Decorate the given function with logic to handle SQLAlchemy errors.
-
-    If a SQLAlchemy exception is thrown, it will be caught and logged and the
-    function will return a fatal response.
-
-    Args:
-        function (func): the function to decorate
-
-    Returns:
-        func: function decorated with error-handling logic
-
-    """
-    @functools.wraps(function)
-    def call_function_with_error_handling(*args, **kwargs):
-        try:
-            function_return = function(*args, **kwargs)
-        except exc.SQLAlchemyError as exception:
-            sentry.sentry_client.captureMessage(exception, stack=True)
-            g.ows.log.error('DB error: {}'.format(exception))
-            return response.create_fatal_response()
-
-        return function_return
-    return call_function_with_error_handling
