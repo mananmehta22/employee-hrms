@@ -152,7 +152,7 @@ def get_emp(emp_no):
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 @mysql.wrap_db_errors
@@ -164,7 +164,7 @@ def get_emp_salary(emp_no, salary):
             ON emp_no = {employee_id} AND salary = {employee_salary};'.format(employee_id=emp_no, employee_salary = salary)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 
@@ -177,7 +177,7 @@ def get_emp_by_manager(manager_id):
         GROUP BY b.manager_id = {manage_id};'.format(manage_id = manager_id)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 
@@ -189,7 +189,7 @@ def get_emp_dept():
         WHERE e.emp_no = d.emp_no;'
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 
@@ -200,7 +200,7 @@ def get_salary_range(start, end):
         WHERE salary BETWEEN first = {start} and last = {end};'.format(first=start, last=end)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 
@@ -213,7 +213,7 @@ def get_manager_dept(manager_id, dept_no):
             GROUP BY b.dept_no = {department_no}, b.manager_id = {manage_id};'.format(department_no = dept_no, manager_id = manager_id)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 
@@ -226,7 +226,7 @@ def get_leaves_employee(emp_no):
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 @mysql.wrap_db_errors
@@ -238,7 +238,7 @@ def get_leaves_left(emp_no):
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 @mysql.wrap_db_errors
@@ -250,7 +250,7 @@ def get_leaves_taken(emp_no):
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
 
 @mysql.wrap_db_errors
@@ -262,7 +262,7 @@ def get_leaves_without_pay(emp_no):
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
         
 @mysql.wrap_db_errors
@@ -273,5 +273,5 @@ def set_employee(emp_id, f_name, l_name, b_date, gen, h_date, sal, dept_id):
         WHERE emp_no = {emp_no};'.format(emp_no=emp_id, first_name = f_name, last_name = l_name, birth_date = b_date, gender = gen, hire_date = h_date, salary = sal, dept_no = dept_id)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.loads(json.dumps(result))
+        result_obj = json.dumps(result)
         return jsonify(message=result_obj)
