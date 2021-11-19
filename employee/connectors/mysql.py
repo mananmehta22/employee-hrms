@@ -1,12 +1,6 @@
-"""MySQL Connector.
-
-Manages interactions with MySQL.
-"""
-
 from contextlib import contextmanager
-import functools
 
-from flask import g, response
+from flask import g
 from sqlalchemy import create_engine
 from sqlalchemy import exc
 from sqlalchemy.ext.declarative import declarative_base
@@ -15,8 +9,9 @@ from sqlalchemy.pool import QueuePool
 
 from employee import config
 
-# please don't use the following private variables directly;
-# use db_session
+import functools
+
+
 if config.POOL_CLASS == QueuePool:
     db_engine = create_engine(
         config.AR_DB_URL, pool_size=config.POOL_SIZE,
@@ -55,3 +50,15 @@ def db_read_session():
         raise
     finally:
         session.close()
+
+def wrap_db_errors(function):
+    @functools.wraps(function)
+    def call_function_with_error_handling(*args, **kwargs):
+        try:
+            function_return = function(*args, **kwargs)
+        except exc.SQLAlchemyError as exception:
+            g.ows.log.error('DB error: {}'.format(exception))
+            return response.create_fatal_response()
+
+        return function_return
+    return call_function_with_error_handling

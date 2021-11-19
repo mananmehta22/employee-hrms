@@ -1,7 +1,7 @@
 from datetime import datetime
 from time import time
 
-from flask import current_app, g, request, response
+from flask import current_app, g, json, request, jsonify
 from flask.globals import request
 
 
@@ -9,31 +9,31 @@ from employee.models import emp_info
 from employee.connectors import mysql
 
 
-def get_emp(emp_id):
-    result = emp_info.get_emp(emp_id)
+def get_emp(emp_no):
+    result = emp_info.get_emp(emp_no)
 
     
-    if emp_id != type(int):
-        return response.create_error_response(
+    if emp_no != type(int):
+        return jsonify(
             status=400, message='Invalid input.')
 
     if not result:
-         return response.create_error_response(
+         return jsonify(
             status=400,
             message='No such record present')
     return result
 
 
 
-def get_emp_salary(emp_id, emp_salary):
-    result = emp_info.get_emp_salary(emp_id, emp_salary)
+def get_emp_salary(emp_no, salary):
+    result = emp_info.get_emp_salary(emp_no, salary)
 
-    if emp_id and emp_salary != type(int):
-         return response.create_error_response(
+    if emp_no and salary != type(int):
+         return jsonify(
             status=400, message='Invalid input.')
 
     if not result:
-         return response.create_error_response(
+         return jsonify(
             status=400,
             message='No such record present')
     return result
@@ -43,11 +43,11 @@ def get_emp_by_manager(manager_id):
     result = emp_info.get_emp_by_manager(manager_id)
 
     if manager_id != type(int):
-         return response.create_error_response(
+         return jsonify(
             status=400, message='Invalid input.')
 
     if not result:
-         return response.create_error_response(
+         return jsonify(
             status=400,
             message='No such record present')
     return result
@@ -57,7 +57,7 @@ def get_emp_by_manager(manager_id):
 def get_emp_dept():
     result = emp_info.get_emp_dept()
     if not result:
-         return response.create_error_response(
+         return jsonify(
             status=400,
             message='No such record present')
     return result
@@ -67,11 +67,11 @@ def get_salary_range(start, end):
     result = emp_info.get_salary_range(start, end)
 
     if start and end != type(int):
-         return response.create_error_response(
+         return jsonify(
             status=400, message='Invalid input.')
 
     if not result:
-         return response.create_error_response(
+         return jsonify(
             status=400,
             message='No such record present')
 
@@ -81,11 +81,11 @@ def get_manager_dept(manager_id, dept_no):
     result = emp_info.get_emp_by_manager(manager_id, dept_no)
 
     if manager_id and dept_no != type(int):
-         return response.create_error_response(
+         return jsonify(
             status=400, message='Invalid input.')
 
     if not result:
-         return response.create_error_response(
+         return jsonify(
             status=400,
             message='No such record present')
     return result
@@ -94,11 +94,11 @@ def get_leaves_employee(emp_no):
     result = emp_info.get_leaves_employee(emp_no)
 
     if emp_no != type(int):
-         return response.create_error_response(
+         return jsonify(
             status=400, message='Invalid input.')
 
     if not result:
-         return response.create_error_response(
+         return jsonify(
             status=400,
             message='No such record present')
     return result

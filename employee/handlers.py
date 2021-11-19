@@ -8,6 +8,7 @@ import flask
 from employee.app import app
 from employee.logic import emp_info
 from flask import Flask
+from flask.json import jsonify
 
 
 @app.route('/hello')
@@ -16,7 +17,7 @@ def hello_world():
 
 @app.route('/employee/<id>', methods='GET')
 def get_employee():
-    return flask(emp_info.get_emp())
+    return flask(emp_info.get_emp)
 
 
 @app.route('/employee/<id>/salary', methods = 'GET')

@@ -21,32 +21,16 @@ SERVICE_NAME = 'employee'
 SERVICE_VERSION = '1.0.0'
 os.environ['SERVICE_NAME'] = SERVICE_NAME
 
-# Logger Name
-LOGGER_NAME = 'users'
-LOGGER_LEVEL = logging.INFO
-LOGGER_DSN = os.environ.get('LOGGER_DSN') or None
-
 # Health check
 HEALTH_CHECK = '/hello/'
-APP_URL = os.environ.get('APP_URL', 'http://localhost:5000')
 
-# art_relations database credentials.
-AR_DB_CREDENTIALS = {
-    'database': os.environ.get('AR_MYSQL_DATABASE'),
-    'host': os.environ.get('AR_MYSQL_HOST'),
-    'password': os.environ.get('AR_MYSQL_PASSWORD'),
-    'port': os.environ.get('AR_MYSQL_PORT'),
-    'user': os.environ.get('AR_MYSQL_USER')
-}
 
 # Database connection configuration.
-QA_ENVIRONMENT = 'qa'
 DEV_ENVIRONMENT = 'dev'
-PROD_ENVIRONMENT = 'prod'
 TEST_ENVIRONMENT = 'test'
 ENVIRONMENT = os.environ.get('Environment') or DEV_ENVIRONMENT
 ENVIRONMENTS = [
-    QA_ENVIRONMENT, DEV_ENVIRONMENT, PROD_ENVIRONMENT, TEST_ENVIRONMENT]
+    DEV_ENVIRONMENT, TEST_ENVIRONMENT]
 if ENVIRONMENT == TEST_ENVIRONMENT:
     AR_DB_URL = 'sqlite://'
     POOL_CLASS = StaticPool
@@ -54,15 +38,15 @@ if ENVIRONMENT == TEST_ENVIRONMENT:
 else:  # pragma: no cover
     # We must explicitly set utf8 encoding for MySQL connections.
     AR_DB_URL = (
-        'mysql+pymysql://{sql6447613}:{AUyb61gwHi}@{freemysqlhosting.net}/{sql6447613}?charset={charset}'
+        'mysql+pymysql://{user}:{password}@{host}/{db}'
         .format(
-            user=AR_DB_CREDENTIALS.get('user'),
-            password=AR_DB_CREDENTIALS.get('password'),
-            host=AR_DB_CREDENTIALS.get('host'),
-            db=AR_DB_CREDENTIALS.get('database'),
-            charset='utf8'))
-    POOL_CLASS = QueuePool
+            user='sql6447613',
+            password='AUyb61gwHi',
+            host='sql6.freemysqlhosting.net',
+            db='sql6447613'))
+    '''POOL_CLASS = QueuePool
     POOL_SIZE = 15
     POOL_RECYCLE_MS = 3600  # Avoids connections going stale
     POOL_MAX_OVERFLOW = -1
     CONNECT_ARGS = {}
+'''
