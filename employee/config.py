@@ -44,9 +44,8 @@ else:  # pragma: no cover
             password='AUyb61gwHi',
             host='sql6.freemysqlhosting.net',
             db='sql6447613'))
-    '''POOL_CLASS = QueuePool
+    POOL_CLASS = QueuePool
     POOL_SIZE = 15
     POOL_RECYCLE_MS = 3600  # Avoids connections going stale
     POOL_MAX_OVERFLOW = -1
     CONNECT_ARGS = {}
-'''

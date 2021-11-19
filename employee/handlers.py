@@ -15,48 +15,47 @@ from flask.json import jsonify
 def hello_world():
     return 'Hello World', 200
 
-@app.route('/employee/<id>', methods=['GET'])
-def get_employee():
-    return flask(emp_info.get_emp)
+@app.route('/employee/<int:emp_no>', methods=['GET'])
+def get_emp(emp_no):
+    return emp_info.get_emp(emp_no)
 
 
-@app.route('/employee/<id>/salary', methods = ['GET'])
-def get_salary():
-    return flask(emp_info.get_emp_salary())
+@app.route('/employee/<int:emp_no>/<int:salary>', methods = ['GET'])
+def get_salary(emp_no, salary):
+    return emp_info.get_emp_salary(emp_no, salary)
 
+
+@app.route('/department/<manager>', methods = ['GET'])
+def get_manager():
+    return emp_info.get_manager_dept()
 
 @app.route('/employee/<department>', methods = ['GET'])
 def single_department():
-    return flask(emp_info.get_emp_dept())
-
-
-@app.route('/employee/<manager>', methods = ['GET'])
-def get_manager():
-    return flask(emp_info.get_emp_by_manager())
+    return emp_info.get_emp_dept()
 
 @app.route('/employee/salary/range', methods = ['GET'])
 def get_salary_range():
-    return flask(emp_info.get_salary_range)
+    return emp_info.get_salary_range
 
 @app.route('/employee/manager/<department>', methods = ['GET'])
 def get_manager_dept():
-    return flask(emp_info.get_manager_dept)
+    return emp_info.get_manager_dept
 
 @app.route('/employee/leaves', methods = ['GET'])
 def get_leaves_employee():
-    return flask(emp_info.get_leaves_employee)
+    return emp_info.get_leaves_employee
 
 @app.route('/employee/leaves_without_pay', methods = ['GET'])
 def get_leaves_without_pay():
-    return flask(emp_info.get_leaves_without_pay)
+    return emp_info.get_leaves_without_pay
 
 @app.route('/employee/leaves_without_pay', methods = ['GET'])
 def get_leaves_taken():
-    return flask(emp_info.get_leaves_without_pay)
+    return emp_info.get_leaves_without_pay
 
 @app.route('/employee/add-employee', methods = ['PUT', 'GET'])
 def add_employee():
-    return flask(emp_info.set_employee)
+    return emp_info.set_employee
 
 
 
