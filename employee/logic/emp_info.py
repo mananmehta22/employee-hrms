@@ -13,7 +13,7 @@ def get_emp(emp_no):
     result = emp_info.get_emp(emp_no)
 
     
-    if emp_no != type(int):
+    if type(emp_no) != int:
         return jsonify(
             status=400, message='Invalid input.')
 
@@ -28,7 +28,7 @@ def get_emp(emp_no):
 def get_emp_salary(emp_no, salary):
     result = emp_info.get_emp_salary(emp_no, salary)
 
-    if emp_no and salary != type(int):
+    if type(emp_no) and type(salary) != int:
          return jsonify(
             status=400, message='Invalid input.')
 
@@ -42,7 +42,7 @@ def get_emp_salary(emp_no, salary):
 def get_emp_by_manager(manager_id):
     result = emp_info.get_emp_by_manager(manager_id)
 
-    if manager_id != type(int):
+    if type(manager_id) != int:
          return jsonify(
             status=400, message='Invalid input.')
 
@@ -66,7 +66,7 @@ def get_emp_dept():
 def get_salary_range(start, end):
     result = emp_info.get_salary_range(start, end)
 
-    if start and end != type(int):
+    if type(start) and type(end) != int:
          return jsonify(
             status=400, message='Invalid input.')
 
@@ -80,7 +80,7 @@ def get_salary_range(start, end):
 def get_manager_dept(manager_id, dept_no):
     result = emp_info.get_emp_by_manager(manager_id, dept_no)
 
-    if manager_id and dept_no != type(int):
+    if type(manager_id) and type(dept_no) != int:
          return jsonify(
             status=400, message='Invalid input.')
 
@@ -93,7 +93,7 @@ def get_manager_dept(manager_id, dept_no):
 def get_leaves_employee(emp_no):
     result = emp_info.get_leaves_employee(emp_no)
 
-    if emp_no != type(int):
+    if type(emp_no) != int:
          return jsonify(
             status=400, message='Invalid input.')
 

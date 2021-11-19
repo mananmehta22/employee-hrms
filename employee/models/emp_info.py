@@ -146,14 +146,17 @@ class Leaves(mysql.BaseModel):
 
 @mysql.wrap_db_errors
 def get_emp(emp_no):
+     data = []
      with mysql.db_read_session() as session:
         sql = 'SELECT * \
             FROM employees \
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
+        
 
 @mysql.wrap_db_errors
 def get_emp_salary(emp_no, salary):
