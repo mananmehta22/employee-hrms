@@ -5,6 +5,7 @@ from flask import Flask
 from flask.json import jsonify
 
 
+
 @app.route('/')
 def hello_world():
     return 'Hello World', 200
@@ -14,24 +15,24 @@ def get_emp(emp_no):
     return emp_info.get_emp(emp_no)
 
 
-@app.route('/employee/<int:emp_no>/<int:salary>/', methods = ['GET'])
+@app.route('/salary/<int:emp_no>/', methods = ['GET'])
 def get_salary(emp_no, salary):
     return emp_info.get_emp_salary(emp_no, salary)
 
 
-@app.route('/department/<manager>/', methods = ['GET'])
+@app.route('/department/<int:manager_id>/', methods = ['GET'])
 def get_manager():
     return emp_info.get_manager_dept()
 
-@app.route('/employee/<department>/', methods = ['GET'])
+@app.route('/department/<int:dept_no>/', methods = ['GET'])
 def single_department():
     return emp_info.get_emp_dept()
 
-@app.route('/employee/salary/range/', methods = ['GET'])
+@app.route('/salary/<int:start>/<int:end>', methods = ['GET'])
 def get_salary_range():
     return emp_info.get_salary_range
 
-@app.route('/employee/manager/<department>/', methods = ['GET'])
+@app.route('/manager/<int:dept_no>/', methods = ['GET'])
 def get_manager_dept():
     return emp_info.get_manager_dept
 
