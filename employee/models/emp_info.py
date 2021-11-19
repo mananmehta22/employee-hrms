@@ -145,23 +145,23 @@ class Leaves(mysql.BaseModel):
         self.leaves_without_pay = leaves_without_pay
 
 @mysql.wrap_db_errors
-def get_emp(emp_id):
+def get_emp(emp_no):
      with mysql.db_read_session() as session:
         sql = 'SELECT * \
             FROM employees \
-            WHERE emp_no = {employee_id};'.format(employee_id=emp_id)
+            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         result_obj = json.loads(json.dumps(result))
         return jsonify(message=result_obj)
 
 @mysql.wrap_db_errors
-def get_emp_salary(emp_id, emp_salary):
+def get_emp_salary(emp_no, salary):
     with mysql.db_read_session() as session:
         sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.salary, b.from_date, b.to_date \
             FROM  employees a \
             INNER JOIN salaries b \
-            ON emp_no = {employee_id} AND salary = {employee_salary};'.format(employee_id=emp_id, employee_salary = emp_salary)
+            ON emp_no = {employee_id} AND salary = {employee_salary};'.format(employee_id=emp_no, employee_salary = salary)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         result_obj = json.loads(json.dumps(result))
