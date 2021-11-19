@@ -1,9 +1,3 @@
-"""Handlers.
-
-All the different endpoints are used to identify a user based on a
-login and a password.
-"""
-
 import flask
 from employee.app import app
 from employee.logic import emp_info
