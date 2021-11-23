@@ -57,8 +57,7 @@ def wrap_db_errors(function):
         try:
             function_return = function(*args, **kwargs)
         except exc.SQLAlchemyError as exception:
-            g.ows.log.error('DB error: {}'.format(exception))
-            return response.create_fatal_response()
+            raise exception
 
         return function_return
     return call_function_with_error_handling

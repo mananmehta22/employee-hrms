@@ -1,8 +1,9 @@
+import re
 import flask
+from werkzeug.wrappers import request
 from employee.app import app
 from employee.logic import emp_info
 from flask import Flask
-from flask.json import jsonify
 
 
 
@@ -10,47 +11,54 @@ from flask.json import jsonify
 def hello_world():
     return 'Hello World', 200
 
-@app.route('/employee/<int:emp_no>/', methods=['GET'])
+@app.route('/employee/<int:emp_no>', methods=['GET'])
 def get_emp(emp_no):
     return emp_info.get_emp(emp_no)
 
 
-@app.route('/salary/<int:emp_no>/', methods = ['GET'])
-def get_salary(emp_no, salary):
-    return emp_info.get_emp_salary(emp_no, salary)
+@app.route('/salary/<int:emp_no>', methods = ['GET'])
+def get_salary(emp_no):
+    return emp_info.get_emp_salary(emp_no)
 
 
-@app.route('/department/<int:manager_id>/', methods = ['GET'])
-def get_manager():
-    return emp_info.get_manager_dept()
+@app.route('/manager/<int:manager_id>', methods = ['GET'])
+def get_emp_manager(manager_id):
+    return emp_info.get_emp_by_manager(manager_id)
 
-@app.route('/department/<int:dept_no>/', methods = ['GET'])
-def single_department():
-    return emp_info.get_emp_dept()
+@app.route('/department/<string:dept_name>', methods = ['GET'])
+def single_department(dept_name):
+    return emp_info.get_emp_dept(dept_name)
 
-@app.route('/salary/<int:start>/<int:end>', methods = ['GET'])
-def get_salary_range():
-    return emp_info.get_salary_range
+@app.route('/salary/<int:start>-<int:end>', methods = ['GET'])
+def get_salary_range(start,end):
+    return emp_info.get_salary_range(start,end)
 
-@app.route('/manager/<int:dept_no>/', methods = ['GET'])
-def get_manager_dept():
-    return emp_info.get_manager_dept
+@app.route('/department/<int:manager_id>/<string:dept_no>', methods = ['GET'])
+def get_manager_dept(manager_id,dept_no):
+    return emp_info.get_manager_dept(manager_id, dept_no)
 
-@app.route('/employee/leaves/', methods = ['GET'])
+@app.route('/employee/leaves', methods = ['GET'])
 def get_leaves_employee():
     return emp_info.get_leaves_employee
 
-@app.route('/employee/leaves_without_pay/', methods = ['GET'])
+@app.route('/employee/leaves_without_pay', methods = ['GET'])
 def get_leaves_without_pay():
-    return emp_info.get_leaves_without_pay
-
-@app.route('/employee/leaves_without_pay/', methods = ['GET'])
-def get_leaves_taken():
-    return emp_info.get_leaves_without_pay
-
-@app.route('/employee/add-employee/', methods = ['PUT', 'GET'])
-def add_employee():
-    return emp_info.set_employee
+    return emp_info.leaves_without_pay()
 
 
+@app.route('/apply/<int:emp_no>/<int:applied_leaves>', methods = ['PUT', 'GET'])
+def apply_for_leaves(emp_no, applied_leaves):
+    return emp_info.apply_for_leaves(emp_no, applied_leaves)
 
+
+@app.route('/add-employee', methods = ['PUT'])
+def set_employee():
+    emp_no = flask.request.args['emp_no']
+    first_name = flask.request.args['first_name']
+    last_name = flask.request.args['last_name']
+    birth_date = flask.request.args['birth_date']
+    gender = flask.request.args['gender']
+    hire_date = flask.request.args['hire_date']
+    salary = flask.request.args['salary']
+    dept_no = flask.request.args['dept_no']
+    return emp_info.set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no)

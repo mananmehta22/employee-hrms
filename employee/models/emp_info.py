@@ -1,3 +1,4 @@
+from os import uname
 from flask.json import jsonify
 import json
 from flask.globals import request
@@ -12,7 +13,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import func
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 
 from employee.connectors import mysql
 
@@ -31,8 +32,8 @@ class Employees(mysql.BaseModel):
     
     
     children_1 = relationship("Salaries", back_populates="parent_1")
-    children_2 = relationship("Titles", back_populates="parent_2")
-    children_4 = relationship("Leaves", back_populates="parent_4")
+    children_2 = relationship('Titles', back_populates="parent_2")
+    children_4 = relationship('Leaves', back_populates="parent_4")
 
 
     def __init__(self, emp_no, first_name, last_name, birth_date, gender, hire_date, last_updated):
@@ -56,7 +57,7 @@ class Salaries(mysql.BaseModel):
     to_date = Column(Date, nullable=False)
 
 
-    parent_1 = relationship("Employees", back_populates="children_1")
+    parent_1 = relationship('Employees', back_populates="children_1")
 
 
     def __init__(self, emp_no, salary, from_date, to_date):
@@ -133,8 +134,8 @@ class Leaves(mysql.BaseModel):
     leaves_without_pay = Column(Integer, primary_key=True)
 
 
-    parent_4 = relationship("Employees", back_populates="children_4")    
-    parent_7 = relationship("Departments", back_populates="children_6")
+    parent_4 = relationship('Employees', back_populates="children_4")    
+    parent_7 = relationship('Departments', back_populates="children_6")
 
 
     def __init__(self, emp_no, dept_no, leaves_taken, leaves_left, leaves_without_pay):
@@ -146,8 +147,8 @@ class Leaves(mysql.BaseModel):
 
 @mysql.wrap_db_errors
 def get_emp(emp_no):
-     data = []
      with mysql.db_read_session() as session:
+        data = []
         sql = 'SELECT * \
             FROM employees \
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
@@ -159,122 +160,193 @@ def get_emp(emp_no):
         
 
 @mysql.wrap_db_errors
-def get_emp_salary(emp_no, salary):
+def get_emp_salary(emp_no):
     with mysql.db_read_session() as session:
-        sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.salary, b.from_date, b.to_date \
+        data = []
+        sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.salary \
             FROM  employees a \
-            INNER JOIN salaries b \
-            ON emp_no = {employee_id} AND salary = {employee_salary};'.format(employee_id=emp_no, employee_salary = salary)
+            LEFT JOIN salaries b \
+            ON a.emp_no = b.emp_no \
+            WHERE a.emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
 
 
 @mysql.wrap_db_errors
 def get_emp_by_manager(manager_id):
     with mysql.db_read_session() as session:
-        sql = ' SELECT a.first_name, a.last_name, b.dept_no, b.manager_id, COUNT (b.emp_no) AS number of employees \
-        FROM employees a \
-        LEFT JOIN  dept_manager b ON a.emp_no = b.emp_no \
-        GROUP BY b.manager_id = {manage_id};'.format(manage_id = manager_id)
+        data = []
+        sql = ' SELECT DISTINCT e.first_name, e.last_name, d.dept_no, d.manager_id \
+        FROM employees e \
+        LEFT JOIN  dept_manager d \
+        ON e.emp_no = d.emp_no \
+        HAVING d.manager_id = {manage_id};'.format(manage_id = manager_id)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
 
 
 @mysql.wrap_db_errors
-def get_emp_dept():
+def get_emp_dept(dept_name):
     with mysql.db_read_session() as session:
-        sql = 'SELECT e.emp_no, e.first_name, e.last_name, e.birth_date, e.gender, e.hire_date, d.dept_no, d.from_date, d.to_date \
-        FROM  employees e, dept_emp d \
-        WHERE e.emp_no = d.emp_no;'
+        data = []
+        sql = 'SELECT DISTINCT e.emp_no, e.first_name, e.last_name, d.dept_no, d.dept_name \
+        FROM  employees e \
+        LEFT JOIN departments d \
+        ON e.emp_no = d.emp_no \
+        HAVING d.dept_name = "{dept_name}";'.format(dept_name=str(dept_name)) 
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
 
 
 @mysql.wrap_db_errors
 def get_salary_range(start, end):
     with mysql.db_read_session() as session:
-        sql = ' SELECT * FROM employees \
-        WHERE salary BETWEEN first = {start} and last = {end};'.format(first=start, last=end)
+        data = []
+        sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.salary \
+            FROM employees AS a \
+            LEFT JOIN salaries AS b ON a.emp_no = b.emp_no \
+            WHERE salary BETWEEN {start} and {end};'.format(start=start, end=end)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
 
 
 @mysql.wrap_db_errors
 def get_manager_dept(manager_id, dept_no):
     with mysql.db_read_session() as session:
-        sql = ' SELECT a.first_name, a.last_name, b.dept_no, b.manager_id \
+        data = []
+        sql = ' SELECT DISTINCT a.first_name, a.last_name, b.manager_id , b.dept_no, c.dept_name \
             FROM employees a \
-            LEFT JOIN dept_manager b ON a.emp_no = b.emp_no \
-            GROUP BY b.dept_no = {department_no}, b.manager_id = {manage_id};'.format(department_no = dept_no, manager_id = manager_id)
+            LEFT JOIN dept_manager b \
+            ON a.emp_no = b.emp_no \
+            LEFT JOIN departments c \
+            ON b.emp_no = c.emp_no \
+            HAVING b.manager_id = {manager_id} and b.dept_no = "{dept_no}";'.format(manager_id=manager_id, dept_no=str(dept_no))
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
 
 
 @mysql.wrap_db_errors
 def get_leaves_employee(emp_no):
     with mysql.db_read_session() as session:
+        data = []
         sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.leaves_taken, b.leaves_left \
-            FROM employees a \
-            LEFT JOIN leaves b ON a.emp_no = b.emp_no \
-            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
+            FROM employees AS a \
+            LEFT JOIN leaves AS b ON a.emp_no = b.emp_no \
+            WHERE a.emp_no = {emp_no};'.format(emp_no=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
+
 
 @mysql.wrap_db_errors
 def get_leaves_left(emp_no):
     with mysql.db_read_session() as session:
+        data = [] 
         sql = ' SELECT b.leaves_left \
-            FROM employees a \
-            LEFT JOIN leaves b ON a.emp_no = b.emp_no \
-            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
+            FROM employees AS a \
+            LEFT JOIN leaves AS b ON a.emp_no = b.emp_no \
+            WHERE a.emp_no = {emp_no};'.format(emp_no=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
 
 @mysql.wrap_db_errors
 def get_leaves_taken(emp_no):
     with mysql.db_read_session() as session:
+        data = []
         sql = ' SELECT b.leaves_taken \
-            FROM employees a \
-            LEFT JOIN leaves b ON a.emp_no = b.emp_no \
-            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
+            FROM employees AS a \
+            LEFT JOIN leaves AS b ON a.emp_no = b.emp_no \
+            WHERE a.emp_no = {emp_no};'.format(emp_no=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
 
 @mysql.wrap_db_errors
 def get_leaves_without_pay(emp_no):
     with mysql.db_read_session() as session:
+        data = []
         sql = ' SELECT b.leaves_without_pay \
-            FROM employees a \
-            LEFT JOIN leaves b ON a.emp_no = b.emp_no \
-            WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
+            FROM employees AS a \
+            LEFT JOIN leaves AS b ON a.emp_no = b.emp_no \
+            WHERE a.emp_no = {emp_no};'.format(emp_no=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
+
+
+@mysql.wrap_db_errors
+def update_unpaid_leaves(emp_no, unpaid_leave):
+      with mysql.db_read_session() as session:
+        data = []
+        sql = ' UPDATE leaves \
+            SET leaves_without_pay = {unpaid_leave}; \
+            WHERE emp_no = {emp_no};'.format(emp_no = emp_no, unpaid_leaves = unpaid_leave)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
+
+
+@mysql.wrap_db_errors
+def update_taken_leaves(emp_no, taken_leave):
+      with mysql.db_read_session() as session:
+        data = []
+        sql = ' UPDATE leaves \
+            SET leaves_taken = {taken_leave}; \
+            WHERE emp_no = {emp_no};'.format(emp_no = emp_no, taken_leaves = taken_leave)
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
+
         
 @mysql.wrap_db_errors
-def set_employee(emp_id, f_name, l_name, b_date, gen, h_date, sal, dept_id):
-    with mysql.db_read_session() as session:
-        sql = ' UPDATE employees, departments, salaries \
-        SET first_name = {first_name}, last_name = {last_name}, birth_date = {birth_date}, gender_date = {gender_date}, hire_date = {hire_date}, salary = {salary}, dept_no = {dept_no} \
-        WHERE emp_no = {emp_no};'.format(emp_no=emp_id, first_name = f_name, last_name = l_name, birth_date = b_date, gender = gen, hire_date = h_date, salary = sal, dept_no = dept_id)
+def update_left_leaves(emp_no, left_leave):
+      with mysql.db_read_session() as session:
+        data = []
+        sql = ' UPDATE leaves \
+            SET leaves_left = {left_leave}; \
+            WHERE emp_no = {emp_no};'.format(emp_no = emp_no, left_leave = left_leave)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        result_obj = json.dumps(result)
-        return jsonify(message=result_obj)
+        for results in result:
+            data.append(list(results))
+        return jsonify(data)
+
+
+@mysql.wrap_db_errors
+def set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no):
+    with mysql.db_read_session() as session:
+        data = []
+        sql = ' UPDATE employees, departments, salaries \
+            SET employees.first_name = "{first_name}", employees.last_name = "{last_name}", employees.birth_date = {birth_date}, employees.gender = "{gender}", employees.hire_date = {hire_date}, salaries.salary = {salary}, departments.dept_no = "{dept_no}" \
+            WHERE employees.emp_no = {emp_no};'.format(emp_no=emp_no, first_name = str(first_name), last_name = str(last_name), birth_date = birth_date, gender = str(gender), hire_date = hire_date, salary = salary, dept_no = str(dept_no))
+        emp_response = session.execute(sql)
+        result = emp_response.fetchall()
+        return result
