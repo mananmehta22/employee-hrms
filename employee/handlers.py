@@ -1,9 +1,9 @@
 import re
 import flask
-from werkzeug.wrappers import request
+from werkzeug.wrappers import request, response
 from employee.app import app
 from employee.logic import emp_info
-from flask import Flask
+from flask import Flask, redirect
 
 
 
@@ -48,7 +48,12 @@ def get_leaves_without_pay():
 
 @app.route('/apply/<int:emp_no>/<int:applied_leaves>', methods = ['PUT', 'GET'])
 def apply_for_leaves(emp_no, applied_leaves):
-    return emp_info.apply_for_leaves(emp_no, applied_leaves)
+    emp_info.apply_for_leaves(emp_no, applied_leaves)
+    return redirect ('/successful')
+
+@app.route('/successful')
+def redirected():
+    return "Your leave application was successful!"
 
 
 @app.route('/add-employee', methods = ['PUT'])
@@ -61,4 +66,10 @@ def set_employee():
     hire_date = flask.request.args['hire_date']
     salary = flask.request.args['salary']
     dept_no = flask.request.args['dept_no']
-    return emp_info.set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no)
+    emp_info.set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no)
+    return redirect ('/update')
+
+@app.route('/update')
+def update():
+    return "Employee Data Succesfully updated!"
+
