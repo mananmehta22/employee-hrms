@@ -181,4 +181,16 @@ def apply_for_leaves(emp_no,applied_leaves):
 
 def set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no):
     result = emp_info.set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no)
+    datetime.strptime(birth_date, '%Y-%m-%d')
+    datetime.strptime(hire_date, '%Y-%m-%d')
+
+    if type(emp_no) != int:
+         return jsonify(
+            status=400, message='Invalid input.')
+
+    if not result:
+         return jsonify(
+            status=400,
+            message='No such record present')
+    
     return result
