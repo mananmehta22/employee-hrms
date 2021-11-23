@@ -304,7 +304,7 @@ def update_unpaid_leaves(emp_no, unpaid_leave):
         data = []
         sql = ' UPDATE leaves \
             SET leaves_without_pay = {unpaid_leave}; \
-            WHERE emp_no = {emp_no};'.format(emp_no = emp_no, unpaid_leaves = unpaid_leave)
+            WHERE emp_no = {emp_no};'.format(emp_no = emp_no, unpaid_leave = unpaid_leave)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
@@ -318,7 +318,7 @@ def update_taken_leaves(emp_no, taken_leave):
         data = []
         sql = ' UPDATE leaves \
             SET leaves_taken = {taken_leave}; \
-            WHERE emp_no = {emp_no};'.format(emp_no = emp_no, taken_leaves = taken_leave)
+            WHERE emp_no = {emp_no};'.format(emp_no = emp_no, taken_leave = taken_leave)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
@@ -345,8 +345,8 @@ def set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, s
     with mysql.db_read_session() as session:
         data = []
         sql = ' UPDATE employees, departments, salaries \
-            SET employees.first_name = "{first_name}", employees.last_name = "{last_name}", employees.birth_date = {birth_date}, employees.gender = "{gender}", employees.hire_date = {hire_date}, salaries.salary = {salary}, departments.dept_no = "{dept_no}" \
-            WHERE employees.emp_no = {emp_no};'.format(emp_no=emp_no, first_name = str(first_name), last_name = str(last_name), birth_date = birth_date, gender = str(gender), hire_date = hire_date, salary = salary, dept_no = str(dept_no))
-        emp_response = session.execute(sql)
-        result = emp_response.fetchall()
-        return result
+            SET employees.first_name = "{first_name}", employees.last_name = "{last_name}", employees.birth_date = "{birth_date}", employees.gender = "{gender}", employees.hire_date = "{hire_date}", salaries.salary = {salary}, departments.dept_no = "{dept_no}" \
+            WHERE employees.emp_no = {emp_no};'.format(emp_no=emp_no, first_name = str(first_name), last_name = str(last_name), birth_date = str(birth_date), gender = str(gender), hire_date = str(hire_date), salary = salary, dept_no = str(dept_no))
+        session.execute(sql)
+        emp_response = session.commit()
+        return emp_response

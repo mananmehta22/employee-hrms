@@ -141,17 +141,16 @@ def leaves_without_pay(emp_no):
     return result
 
 def apply_for_leaves(emp_no,applied_leaves):
-    import pdb; pdb.set_trace()
     taken_leaves = emp_info.get_leaves_taken(emp_no).json
     empty = [str(x) for x in taken_leaves]
     dummy = "".join(empty)
     foul = dummy.strip("[]")
-    left_leave = int(foul)
+    taken_leave = int(foul)
     left_leaves = emp_info.get_leaves_left(emp_no).json
     empty1 = [str(x) for x in left_leaves]
     dummy1 = "".join(empty1)
     foul1 = dummy1.strip("[]")
-    taken_leave = int(foul1)
+    left_leave = int(foul1)
     unpaid_leaves = emp_info.get_leaves_without_pay(emp_no).json
     empty2 = [str(x) for x in unpaid_leaves]
     dummy2 = "".join(empty2)
@@ -181,4 +180,5 @@ def apply_for_leaves(emp_no,applied_leaves):
 
 
 def set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no):
-    return emp_info.set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no)
+    result = emp_info.set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no)
+    return result
