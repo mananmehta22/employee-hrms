@@ -303,13 +303,11 @@ def update_unpaid_leaves(emp_no, unpaid_leave):
       with mysql.db_read_session() as session:
         data = []
         sql = ' UPDATE leaves \
-            SET leaves_without_pay = {unpaid_leave}; \
+            SET leaves_without_pay = {unpaid_leave} \
             WHERE emp_no = {emp_no};'.format(emp_no = emp_no, unpaid_leave = unpaid_leave)
-        emp_response = session.execute(sql)
-        result = emp_response.fetchall()
-        for results in result:
-            data.append(list(results))
-        return jsonify(data)
+        session.execute(sql)
+        emp_response = session.commit()
+        return emp_response
 
 
 @mysql.wrap_db_errors
@@ -317,13 +315,11 @@ def update_taken_leaves(emp_no, taken_leave):
       with mysql.db_read_session() as session:
         data = []
         sql = ' UPDATE leaves \
-            SET leaves_taken = {taken_leave}; \
+            SET leaves_taken = {taken_leave} \
             WHERE emp_no = {emp_no};'.format(emp_no = emp_no, taken_leave = taken_leave)
-        emp_response = session.execute(sql)
-        result = emp_response.fetchall()
-        for results in result:
-            data.append(list(results))
-        return jsonify(data)
+        session.execute(sql)
+        emp_response = session.commit()
+        return emp_response
 
         
 @mysql.wrap_db_errors
@@ -331,13 +327,12 @@ def update_left_leaves(emp_no, left_leave):
       with mysql.db_read_session() as session:
         data = []
         sql = ' UPDATE leaves \
-            SET leaves_left = {left_leave}; \
+            SET leaves_left = {left_leave} \
             WHERE emp_no = {emp_no};'.format(emp_no = emp_no, left_leave = left_leave)
-        emp_response = session.execute(sql)
-        result = emp_response.fetchall()
-        for results in result:
-            data.append(list(results))
-        return jsonify(data)
+        session.execute(sql)
+        emp_response = session.commit()
+        return emp_response
+
 
 
 @mysql.wrap_db_errors
