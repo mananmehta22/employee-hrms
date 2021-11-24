@@ -23,7 +23,11 @@ os.environ['SERVICE_NAME'] = SERVICE_NAME
 
 # Health check
 HEALTH_CHECK = '/hello/'
-
+EF_DB_CREDENTIALS = { 'database': os.environ.get('EF_MYSQL_DATABASE'),    
+                'host': os.environ.get('EF_MYSQL_HOST'),    
+                'password': os.environ.get('EF_MYSQL_PASSWORD'),    
+                'port': os.environ.get('EF_MYSQL_PORT'),    
+                'user': os.environ.get('EF_MYSQL_USER')}
 
 # Database connection configuration.
 DEV_ENVIRONMENT = 'dev'
@@ -32,18 +36,18 @@ ENVIRONMENT = os.environ.get('Environment') or DEV_ENVIRONMENT
 ENVIRONMENTS = [
     DEV_ENVIRONMENT, TEST_ENVIRONMENT]
 if ENVIRONMENT == TEST_ENVIRONMENT:
-    AR_DB_URL = 'sqlite://'
+    EF_DB_URL = 'sqlite://'
     POOL_CLASS = StaticPool
     CONNECT_ARGS = {'check_same_thread': False}
 else:  # pragma: no cover
     # We must explicitly set utf8 encoding for MySQL connections.
-    AR_DB_URL = (
+    EF_DB_URL = (
         'mysql+pymysql://{user}:{password}@{host}/{db}'
         .format(
-            user='sql6447613',
-            password='AUyb61gwHi',
-            host='sql6.freemysqlhosting.net',
-            db='sql6447613'))
+            user= EF_DB_CREDENTIALS.get('user'),
+            password=EF_DB_CREDENTIALS.get('password'),
+            host=EF_DB_CREDENTIALS.get('host'),
+            db=EF_DB_CREDENTIALS.get('database')))
     POOL_CLASS = QueuePool
     POOL_SIZE = 15
     POOL_RECYCLE_MS = 3600  # Avoids connections going stale
