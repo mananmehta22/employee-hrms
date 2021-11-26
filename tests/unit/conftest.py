@@ -24,6 +24,8 @@ def context():
 
     context_instance = application.app.app_context()
 
+    return context_instance
+
 
 @pytest.fixture
 def app():
@@ -33,7 +35,8 @@ def app():
 
 @pytest.fixture
 def client(app):
-    return app.test_client()
+    with app.test_client() as client:
+        yield client
 
 
 @pytest.fixture

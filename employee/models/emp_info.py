@@ -148,15 +148,22 @@ class Leaves(mysql.BaseModel):
 @mysql.wrap_db_errors
 def get_emp(emp_no):
      with mysql.db_read_session() as session:
-        data = []
+        data = dict(emp_id=[], first_name=[], last_name=[], birth_day=[], gender=[], date_hired=[], updated=[])
         sql = 'SELECT * \
             FROM employees \
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
+        import pdb; pdb.set_trace()
         for results in result:
-            data.append(list(results))
-        return jsonify(data)
+            data['emp_id'].append(results[0])
+            data['first_name'].append(results[1])
+            data['last_name'].append(results[2])
+            data['birth_day'].append(results[3])
+            data['gender'].append(results[4])
+            data['date_hired'].append(results[5])
+            data['updated'].append(results[6])
+        return data
         
 
 @mysql.wrap_db_errors
