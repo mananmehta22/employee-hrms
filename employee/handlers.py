@@ -13,6 +13,7 @@ def hello_world():
 
 @app.route('/employee/<int:emp_no>', methods=['GET'])
 def get_emp(emp_no):
+    import pdb; pdb.set_trace()
     return emp_info.get_emp(emp_no)
 
 
