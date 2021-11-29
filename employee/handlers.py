@@ -13,21 +13,20 @@ def hello_world():
 
 @app.route('/employee/<int:emp_no>', methods=['GET'])
 def get_emp(emp_no):
-    import pdb; pdb.set_trace()
     return emp_info.get_emp(emp_no)
 
 
 @app.route('/salary/<int:emp_no>', methods = ['GET'])
-def get_salary(emp_no):
+def get_emp_salary(emp_no):
     return emp_info.get_emp_salary(emp_no)
 
 
 @app.route('/manager/<int:manager_id>', methods = ['GET'])
-def get_emp_manager(manager_id):
+def get_emp_by_manager(manager_id):
     return emp_info.get_emp_by_manager(manager_id)
 
 @app.route('/department/<string:dept_name>', methods = ['GET'])
-def single_department(dept_name):
+def get_emp_dept(dept_name):
     return emp_info.get_emp_dept(dept_name)
 
 @app.route('/salary/<int:start>-<int:end>', methods = ['GET'])
@@ -38,9 +37,9 @@ def get_salary_range(start,end):
 def get_manager_dept(manager_id,dept_no):
     return emp_info.get_manager_dept(manager_id, dept_no)
 
-@app.route('/employee/leaves', methods = ['GET'])
-def get_leaves_employee():
-    return emp_info.get_leaves_employee
+@app.route('/leaves/<int:emp_no>', methods = ['GET'])
+def get_leaves_employee(emp_no):
+    return emp_info.get_leaves_employee(emp_no)
 
 @app.route('/employee/leaves_without_pay', methods = ['GET'])
 def get_leaves_without_pay():

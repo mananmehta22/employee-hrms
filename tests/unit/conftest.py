@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 import os
 
-from employee.app import app
+from employee import app
 from flask import Flask
 
 @pytest.fixture
@@ -28,15 +28,8 @@ def context():
 
 
 @pytest.fixture
-def app():
-    app = Flask("flask_test", root_path=os.path.dirname(__file__))
-    return app
-
-
-@pytest.fixture
-def client(app):
-    with app.test_client() as client:
-        yield client
+def client():
+    return app.app.test_client()
 
 
 @pytest.fixture

@@ -154,7 +154,6 @@ def get_emp(emp_no):
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
-        import pdb; pdb.set_trace()
         for results in result:
             data['emp_id'].append(results[0])
             data['first_name'].append(results[1])
@@ -169,7 +168,7 @@ def get_emp(emp_no):
 @mysql.wrap_db_errors
 def get_emp_salary(emp_no):
     with mysql.db_read_session() as session:
-        data = []
+        data = dict(emp_id=[], first_name=[], last_name=[], salary=[])
         sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.salary \
             FROM  employees a \
             LEFT JOIN salaries b \
@@ -178,14 +177,17 @@ def get_emp_salary(emp_no):
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
-            data.append(list(results))
-        return jsonify(data)
+            data['emp_id'].append(results[0])
+            data['first_name'].append(results[1])
+            data['last_name'].append(results[2])
+            data['salary'].append(results[3])
+        return data
 
 
 @mysql.wrap_db_errors
 def get_emp_by_manager(manager_id):
     with mysql.db_read_session() as session:
-        data = []
+        data = dict(first_name=[], last_name=[], dept_id=[], manager_id=[])
         sql = ' SELECT DISTINCT e.first_name, e.last_name, d.dept_no, d.manager_id \
         FROM employees e \
         LEFT JOIN  dept_manager d \
@@ -194,14 +196,17 @@ def get_emp_by_manager(manager_id):
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
-            data.append(list(results))
-        return jsonify(data)
+            data['first_name'].append(results[0])
+            data['last_name'].append(results[1])
+            data['dept_id'].append(results[2])
+            data['manager_id'].append(results[3])
+        return data
 
 
 @mysql.wrap_db_errors
 def get_emp_dept(dept_name):
     with mysql.db_read_session() as session:
-        data = []
+        data = dict(emp_id=[], first_name=[], last_name=[], dept_id=[], dept_name=[])
         sql = 'SELECT DISTINCT e.emp_no, e.first_name, e.last_name, d.dept_no, d.dept_name \
         FROM  employees e \
         LEFT JOIN departments d \
@@ -210,14 +215,18 @@ def get_emp_dept(dept_name):
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
-            data.append(list(results))
-        return jsonify(data)
+            data['emp_id'].append(results[0])
+            data['first_name'].append(results[1])
+            data['last_name'].append(results[2])
+            data['dept_id'].append(results[3])
+            data['dept_name'].append(results[4])
+        return data
 
 
 @mysql.wrap_db_errors
 def get_salary_range(start, end):
     with mysql.db_read_session() as session:
-        data = []
+        data = dict(emp_id=[], first_name=[], last_name=[], salary=[])
         sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.salary \
             FROM employees AS a \
             LEFT JOIN salaries AS b ON a.emp_no = b.emp_no \
@@ -225,14 +234,17 @@ def get_salary_range(start, end):
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
-            data.append(list(results))
-        return jsonify(data)
+            data['emp_id'].append(results[0])
+            data['first_name'].append(results[1])
+            data['last_name'].append(results[2])
+            data['salary'].append(results[3])
+        return data
 
 
 @mysql.wrap_db_errors
 def get_manager_dept(manager_id, dept_no):
     with mysql.db_read_session() as session:
-        data = []
+        data = dict(first_name=[], last_name=[], manager_id=[], dept_id=[], dept_name=[])
         sql = ' SELECT DISTINCT a.first_name, a.last_name, b.manager_id , b.dept_no, c.dept_name \
             FROM employees a \
             LEFT JOIN dept_manager b \
@@ -243,23 +255,32 @@ def get_manager_dept(manager_id, dept_no):
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
-            data.append(list(results))
-        return jsonify(data)
+            data['first_name'].append(results[0])
+            data['last_name'].append(results[1])
+            data['manager_id'].append(results[2])
+            data['dept_id'].append(results[3])
+            data['dept_name'].append(results[4])
+        return data
 
 
 @mysql.wrap_db_errors
 def get_leaves_employee(emp_no):
     with mysql.db_read_session() as session:
-        data = []
-        sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.leaves_taken, b.leaves_left \
+        data = dict(emp_id=[], first_name=[], last_name=[], leaves_taken=[], leaves_left=[], unpaid_leaves=[])
+        sql = ' SELECT a.emp_no, a.first_name, a.last_name, b.leaves_taken, b.leaves_left, b.leaves_without_pay \
             FROM employees AS a \
             LEFT JOIN leaves AS b ON a.emp_no = b.emp_no \
             WHERE a.emp_no = {emp_no};'.format(emp_no=emp_no)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
-            data.append(list(results))
-        return jsonify(data)
+            data['emp_id'].append(results[0])
+            data['first_name'].append(results[1])
+            data['last_name'].append(results[2])
+            data['leaves_taken'].append(results[3])
+            data['leaves_left'].append(results[4])
+            data['unpaid_leaves'].append(results[5])
+        return data
 
 
 @mysql.wrap_db_errors
