@@ -18,7 +18,7 @@ def get_emp(emp_no):
 
     result = emp_info.get_emp(emp_no)
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -34,7 +34,7 @@ def get_emp_salary(emp_no):
 
     result = emp_info.get_emp_salary(emp_no)
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -48,7 +48,7 @@ def get_emp_by_manager(manager_id):
          return jsonify(
             status=400, message='Invalid input.')
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -63,7 +63,7 @@ def get_emp_dept(dept_name):
          return jsonify(
             status=400, message='Invalid input.')
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -77,7 +77,7 @@ def get_salary_range(start, end):
          return jsonify(
             status=400, message='Invalid input.')
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -95,7 +95,7 @@ def get_manager_dept(manager_id, dept_no):
          return jsonify(
             status=400, message='Invalid input.')
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -108,7 +108,7 @@ def get_leaves_employee(emp_no):
          return jsonify(
             status=400, message='Invalid input.')
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -121,7 +121,7 @@ def get_leaves_taken(emp_no):
          return jsonify(
             status=400, message='Invalid input.')
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -134,7 +134,7 @@ def leaves_without_pay(emp_no):
          return jsonify(
             status=400, message='Invalid input.')
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
@@ -188,7 +188,7 @@ def set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, s
          return jsonify(
             status=400, message='Invalid input.')
 
-    if bool(result):
+    if [] in result.values():
          return jsonify(
             status=400,
             message='No such record present')
