@@ -12,28 +12,29 @@ from employee.connectors import mysql
 
 
 def get_emp(emp_no):
-    if type(emp_no) != int:
+    if not emp_no.isdigit():
         return jsonify(
             status=400, message='Invalid input.')
 
     result = emp_info.get_emp(emp_no)
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
+
     return result
 
 
 
 def get_emp_salary(emp_no):
-    result = emp_info.get_emp_salary(emp_no)
-
-    if type(emp_no) != int:
+    if not emp_no.isdigit():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    result = emp_info.get_emp_salary(emp_no)
+
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
@@ -43,11 +44,11 @@ def get_emp_salary(emp_no):
 def get_emp_by_manager(manager_id):
     result = emp_info.get_emp_by_manager(manager_id)
 
-    if type(manager_id) != int:
+    if not manager_id.isdigit():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
@@ -58,11 +59,11 @@ def get_emp_by_manager(manager_id):
 def get_emp_dept(dept_name):
     result = emp_info.get_emp_dept(dept_name)
    
-    if type(dept_name) != str:
+    if not dept_name.isalpha():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
@@ -72,11 +73,11 @@ def get_emp_dept(dept_name):
 def get_salary_range(start, end):
     result = emp_info.get_salary_range(start, end)
 
-    if type(start) and type(end) != int:
+    if not start.isdigit() and end.isdigit():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
@@ -86,15 +87,15 @@ def get_salary_range(start, end):
 def get_manager_dept(manager_id, dept_no):
     result = emp_info.get_manager_dept(manager_id, dept_no)
 
-    if type(manager_id) != int:
+    if not manager_id.isdigit():
          return jsonify(
             status=400, message='Invalid input.')
     
-    if type(dept_no) != str:
+    if not dept_no.isalpha():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
@@ -103,11 +104,11 @@ def get_manager_dept(manager_id, dept_no):
 def get_leaves_employee(emp_no):
     result = emp_info.get_leaves_employee(emp_no)
 
-    if type(emp_no) != int:
+    if not emp_no.isdigit():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
@@ -116,11 +117,11 @@ def get_leaves_employee(emp_no):
 def get_leaves_taken(emp_no):
     result = emp_info.get_leaves_taken(emp_no)
 
-    if type(emp_no) != int:
+    if not emp_no.isdigit():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
@@ -129,11 +130,11 @@ def get_leaves_taken(emp_no):
 def leaves_without_pay(emp_no):
     result = emp_info.get_leaves_without_pay(emp_no)
 
-    if type(emp_no) != int:
+    if not emp_no.isdigit():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')
@@ -183,11 +184,11 @@ def set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, s
     datetime.strptime(birth_date, '%Y-%m-%d')
     datetime.strptime(hire_date, '%Y-%m-%d')
 
-    if type(emp_no) != int:
+    if not emp_no.isdigit():
          return jsonify(
             status=400, message='Invalid input.')
 
-    if not result:
+    if bool(result):
          return jsonify(
             status=400,
             message='No such record present')

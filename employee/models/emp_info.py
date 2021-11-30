@@ -149,7 +149,6 @@ class Leaves(mysql.BaseModel):
 def get_emp(emp_no):
      with mysql.db_read_session() as session:
         data = dict(emp_id=[], first_name=[], last_name=[], birth_day=[], gender=[], date_hired=[], updated=[])
-        import pdb; pdb.set_trace()
         sql = 'SELECT * \
             FROM employees \
             WHERE emp_no = {employee_id};'.format(employee_id=emp_no)

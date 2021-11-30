@@ -11,33 +11,33 @@ from flask import Flask, redirect
 def hello_world():
     return 'Hello World', 200
 
-@app.route('/employee/<int:emp_no>', methods=['GET'])
+@app.route('/employee/<emp_no>', methods=['GET'])
 def get_emp(emp_no):
     return emp_info.get_emp(emp_no)
 
 
-@app.route('/salary/<int:emp_no>', methods = ['GET'])
+@app.route('/salary/<emp_no>', methods = ['GET'])
 def get_emp_salary(emp_no):
     return emp_info.get_emp_salary(emp_no)
 
 
-@app.route('/manager/<int:manager_id>', methods = ['GET'])
+@app.route('/manager/<manager_id>', methods = ['GET'])
 def get_emp_by_manager(manager_id):
     return emp_info.get_emp_by_manager(manager_id)
 
-@app.route('/department/<string:dept_name>', methods = ['GET'])
+@app.route('/department/<dept_name>', methods = ['GET'])
 def get_emp_dept(dept_name):
     return emp_info.get_emp_dept(dept_name)
 
-@app.route('/salary/<int:start>-<int:end>', methods = ['GET'])
+@app.route('/salary/<start>-<end>', methods = ['GET'])
 def get_salary_range(start,end):
     return emp_info.get_salary_range(start,end)
 
-@app.route('/department/<int:manager_id>/<string:dept_no>', methods = ['GET'])
+@app.route('/department/<manager_id>/<dept_no>', methods = ['GET'])
 def get_manager_dept(manager_id,dept_no):
     return emp_info.get_manager_dept(manager_id, dept_no)
 
-@app.route('/leaves/<int:emp_no>', methods = ['GET'])
+@app.route('/leaves/<emp_no>', methods = ['GET'])
 def get_leaves_employee(emp_no):
     return emp_info.get_leaves_employee(emp_no)
 
@@ -56,7 +56,7 @@ def redirected():
     return "Your leave application was successful!"
 
 
-@app.route('/add-employee', methods = ['PUT'])
+@app.route('/update/employee', methods = ['PUT'])
 def set_employee():
     emp_no = flask.request.args['emp_no']
     first_name = flask.request.args['first_name']
