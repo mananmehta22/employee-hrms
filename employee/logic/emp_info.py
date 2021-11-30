@@ -12,12 +12,11 @@ from employee.connectors import mysql
 
 
 def get_emp(emp_no):
-    result = emp_info.get_emp(emp_no)
-
-    
     if type(emp_no) != int:
         return jsonify(
             status=400, message='Invalid input.')
+
+    result = emp_info.get_emp(emp_no)
 
     if not result:
          return jsonify(
