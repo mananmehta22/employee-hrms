@@ -246,3 +246,21 @@ def test_get_leaves_employee(mocker, emp_id, expected_result):
 
     user_result = emp_info.get_leaves_employee(emp_id)
     assert user_result == expected_result
+
+
+@pytest.mark.parametrize(
+    ('emp_id, applied_leaves, expected_result'),
+    [
+        (
+            '3', '3', "Your leave application was successful!"
+            
+        )
+    ]
+    
+)
+def test_get_manager_dept(mocker, emp_id, applied_leaves, expected_result):
+    mocker.patch.object(
+        emp_info, 'get_manager_dept', return_value=expected_result, autospec=True)
+
+    user_result = emp_info.get_manager_dept(emp_id, applied_leaves)
+    assert user_result == expected_result

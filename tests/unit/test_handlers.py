@@ -1,6 +1,9 @@
+from _pytest.mark import param
 from flask import jsonify, request
 from unittest.mock import patch
 import json
+
+from flask.helpers import url_for
 
 
 from employee import config
@@ -302,5 +305,30 @@ def test_get_leaves_employee(mocker, client):
 }
 
 
+def test_get_leaves_employee(mocker, client):
+    mocker.patch.object(
+        emp_info, 'apply_for_leaves', return_value = "Your leave application was successful!")
+
+    handler_response = client.put('/apply/3/3', follow_redirects=True)
+    encoding = 'utf-8'
+    temp = handler_response.data
+    temp1 = handler_response.response[0]
+    result = str(temp1, encoding)
+    assert handler_response.status_code == 200
+    assert result == "Your leave application was successful!"
+
+
+'''def test_set_employee(mocker, client):
+    mocker.patch.object(
+        emp_info, 'set_employee', return_value = "Employee Data Succesfully updated!")
+
+    handler_response = client.put('/update/employee', follow_redirects=True)
+    encoding = 'utf-8'
+    temp = handler_response.data
+    temp1 = handler_response.response[0]
+    result = str(temp1, encoding)
+    assert handler_response.status_code == 200
+    assert result == "Employee Data Succesfully updated!"
+    '''
 
 

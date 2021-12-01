@@ -56,7 +56,7 @@ def redirected():
     return "Your leave application was successful!"
 
 
-@app.route('/update/employee', methods = ['PUT'])
+@app.route('/update/employee', methods = ['PUT', 'GET'])
 def set_employee():
     emp_no = flask.request.args['emp_no']
     first_name = flask.request.args['first_name']
