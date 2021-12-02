@@ -318,17 +318,16 @@ def test_get_leaves_employee(mocker, client):
     assert result == "Your leave application was successful!"
 
 
-'''def test_set_employee(mocker, client):
+def test_set_employee(mocker, client):
     mocker.patch.object(
         emp_info, 'set_employee', return_value = "Employee Data Succesfully updated!")
 
-    handler_response = client.put('/update/employee', follow_redirects=True)
+    handler_response = client.put('/update/employee?emp_no=1&first_name=Shreyaa&last_name=Mendhe&birth_date=1994-04-05&gender=F&hire_date=2015-03-07&salary=300000&dept_no=RA', follow_redirects=True)
     encoding = 'utf-8'
     temp = handler_response.data
     temp1 = handler_response.response[0]
     result = str(temp1, encoding)
     assert handler_response.status_code == 200
     assert result == "Employee Data Succesfully updated!"
-    '''
 
 

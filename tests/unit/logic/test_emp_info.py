@@ -258,9 +258,27 @@ def test_get_leaves_employee(mocker, emp_id, expected_result):
     ]
     
 )
-def test_get_manager_dept(mocker, emp_id, applied_leaves, expected_result):
+def test_get_apply_for_leaves(mocker, emp_id, applied_leaves, expected_result):
     mocker.patch.object(
-        emp_info, 'get_manager_dept', return_value=expected_result, autospec=True)
+        emp_info, 'apply_for_leaves', return_value=expected_result, autospec=True)
 
-    user_result = emp_info.get_manager_dept(emp_id, applied_leaves)
+    user_result = emp_info.apply_for_leaves(emp_id, applied_leaves)
+    assert user_result == expected_result
+
+
+@pytest.mark.parametrize(
+    ('emp_id, first_name, last_name, birth_date, gender, hire_date, salary, dept_id, expected_result'),
+    [
+        (
+            '3', 'Manan', 'Mehta', '1995-09-22', 'M', '2021-10-25', '200000', 'IT', "Employee Data Succesfully updated!"
+            
+        )
+    ]
+    
+)
+def test_set_employee(mocker, emp_id, first_name, last_name, birth_date, gender, hire_date, salary, dept_id, expected_result):
+    mocker.patch.object(
+        emp_info, 'set_employee', return_value=expected_result, autospec=True)
+
+    user_result = emp_info.set_employee(emp_id, first_name, last_name, birth_date, gender, hire_date, salary, dept_id,)
     assert user_result == expected_result
