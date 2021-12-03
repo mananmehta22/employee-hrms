@@ -9,7 +9,7 @@ from employee.connectors.mysql import db_session
 
 
 def seed_models(models):
-   
+   # import pdb; pdb.set_trace()
     if not hasattr(models, '__iter__'):
         models = [models]
 

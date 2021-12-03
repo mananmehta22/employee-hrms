@@ -1,6 +1,10 @@
 import factory
 
 from employee.models.emp_info import Salaries
+from sqlalchemy import Date
+from datetime import date, datetime
+
+import random
 
 
 class SalariesFactory(factory.Factory):
@@ -9,8 +13,8 @@ class SalariesFactory(factory.Factory):
 
         model = Salaries
 
+    
     emp_no = factory.Sequence(lambda n: n)
-    salary = factory.Sequence(lambda n: n)
-    from_date = factory.Sequence(lambda n: n)
-    to_date = factory.Sequence(lambda n: n)
-   
+    salary = '200000'
+    from_date = date(random.randint(1947,1999), random.randint(1,12), random.randint(1,30))
+    to_date = date(random.randint(1947,1999), random.randint(1,12), random.randint(1,30))

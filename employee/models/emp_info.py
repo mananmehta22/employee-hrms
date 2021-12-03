@@ -1,3 +1,4 @@
+from datetime import datetime
 from os import uname
 from flask.json import jsonify
 import json
@@ -13,7 +14,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import func
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import backref, relation, relationship
 
 from employee.connectors import mysql
 
@@ -27,24 +28,22 @@ class Employees(mysql.BaseModel):
     last_name = Column(VARCHAR(20), nullable=False)
     birth_date = Column(Date, nullable=False)
     gender = Column(Enum('M','F'))
-    hire_date = Column(Date)
-    last_updated = Column(DATETIME)
+    hire_date = Column(Date, nullable=False)
+    last_updated = Column(DATETIME, nullable=False)
     
     
     children_1 = relationship("Salaries", back_populates="parent_1")
     children_2 = relationship('Titles', back_populates="parent_2")
-    children_4 = relationship('Leaves', back_populates="parent_4")
-
+    children_3 = relationship('Leaves', back_populates="parent_3")
 
     def __init__(self, emp_no, first_name, last_name, birth_date, gender, hire_date, last_updated):
         self.emp_no = emp_no
         self.first_name = first_name
         self.last_name = last_name
-        self.birth_date = birth_date
-        self.gender = gender
-        self.hire_date = hire_date
-        self.last_updated = last_updated
-
+        self.birth_date = birth_date                  
+        self.gender = gender                 
+        self.hire_date = hire_date        
+        self.last_updated = last_updated     
 
 class Salaries(mysql.BaseModel):
 
@@ -64,7 +63,7 @@ class Salaries(mysql.BaseModel):
         self.emp_no = emp_no
         self.salary = salary
         self.from_date = from_date
-        self.to = to_date\
+        self.to_date = to_date
 
 class Titles(mysql.BaseModel):
 
@@ -79,11 +78,12 @@ class Titles(mysql.BaseModel):
     parent_2 = relationship("Employees", back_populates="children_2")
 
 
+
     def __init__(self, emp_no, title, from_date, to_date):
         self.emp_no = emp_no
         self.title = title
         self.from_date = from_date
-        self.to = to_date
+        self.to_date = to_date
 
 class Dept_Manager(mysql.BaseModel):
 
@@ -96,7 +96,7 @@ class Dept_Manager(mysql.BaseModel):
     from_date = Column(Date, nullable=False)
     to_date = Column(Date, nullable=False)
 
-    parent_6 = relationship("Departments", back_populates="children_5")
+    parent_4 = relationship("Departments", back_populates="children_4")
 
 
     def __init__(self, manager_id, emp_no, dept_no, from_date, to_date):
@@ -114,8 +114,8 @@ class Departments(mysql.BaseModel):
     dept_no = Column(CHAR(4), primary_key=True, nullable=False)
     dept_name = Column(VARCHAR(11), nullable=False)
 
-    children_6 = relationship("Dept_Manager", back_populates="parent_5")
-    children_7 = relationship("Leaves", back_populates="parent_6")
+    children_4 = relationship('Dept_Manager', back_populates="parent_4")
+    children_6 = relationship("Leaves", back_populates="parent_7")
 
 
     def __init__(self, emp_no, dept_no, dept_name):
@@ -134,7 +134,7 @@ class Leaves(mysql.BaseModel):
     leaves_without_pay = Column(Integer, primary_key=True)
 
 
-    parent_4 = relationship('Employees', back_populates="children_4")    
+    parent_3 = relationship('Employees', back_populates="children_3")    
     parent_7 = relationship('Departments', back_populates="children_6")
 
 
@@ -147,7 +147,7 @@ class Leaves(mysql.BaseModel):
 
 @mysql.wrap_db_errors
 def get_emp(emp_no):
-     with mysql.db_read_session() as session:
+    with mysql.db_read_session() as session:
         data = dict(emp_id=[], first_name=[], last_name=[], birth_day=[], gender=[], date_hired=[], updated=[])
         sql = 'SELECT * \
             FROM employees \
@@ -192,6 +192,7 @@ def get_emp_by_manager(manager_id):
         FROM employees e \
         LEFT JOIN  dept_manager d \
         ON e.emp_no = d.emp_no \
+        GROUP BY d.manager_id \
         HAVING d.manager_id = {manage_id};'.format(manage_id = manager_id)
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
@@ -211,6 +212,7 @@ def get_emp_dept(dept_name):
         FROM  employees e \
         LEFT JOIN departments d \
         ON e.emp_no = d.emp_no \
+        GROUP BY d.dept_name \
         HAVING d.dept_name = "{dept_name}";'.format(dept_name=str(dept_name)) 
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
@@ -251,6 +253,7 @@ def get_manager_dept(manager_id, dept_no):
             ON a.emp_no = b.emp_no \
             LEFT JOIN departments c \
             ON b.emp_no = c.emp_no \
+            GROUP BY b.manager_id \
             HAVING b.manager_id = {manager_id} and b.dept_no = "{dept_no}";'.format(manager_id=manager_id, dept_no=str(dept_no))
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
@@ -294,7 +297,7 @@ def get_leaves_left(emp_no):
         emp_response = session.execute(sql)
         result = emp_response.fetchall()
         for results in result:
-            data['leaves_taken'].append(results[0])
+            data['leaves_left'].append(results[0])
         return data
 
 @mysql.wrap_db_errors
@@ -329,47 +332,53 @@ def get_leaves_without_pay(emp_no):
 @mysql.wrap_db_errors
 def update_unpaid_leaves(emp_no, unpaid_leave):
       with mysql.db_read_session() as session:
-        data = []
+        # import pdb; pdb.set_trace()
         sql = ' UPDATE leaves \
             SET leaves_without_pay = {unpaid_leave} \
             WHERE emp_no = {emp_no};'.format(emp_no = emp_no, unpaid_leave = unpaid_leave)
         session.execute(sql)
         emp_response = session.commit()
-        return emp_response
+        return "Updated Unpaid Leaves Successfully!!"
 
 
 @mysql.wrap_db_errors
 def update_taken_leaves(emp_no, taken_leave):
       with mysql.db_read_session() as session:
-        data = []
         sql = ' UPDATE leaves \
             SET leaves_taken = {taken_leave} \
             WHERE emp_no = {emp_no};'.format(emp_no = emp_no, taken_leave = taken_leave)
         session.execute(sql)
         emp_response = session.commit()
-        return emp_response
+        return "Updated Taken Leaves Successfully!!"
+        
 
         
 @mysql.wrap_db_errors
 def update_left_leaves(emp_no, left_leave):
       with mysql.db_read_session() as session:
-        data = []
         sql = ' UPDATE leaves \
             SET leaves_left = {left_leave} \
             WHERE emp_no = {emp_no};'.format(emp_no = emp_no, left_leave = left_leave)
         session.execute(sql)
         emp_response = session.commit()
-        return emp_response
+        return "Updated Leaves Left Successfully!!"
 
 
 
 @mysql.wrap_db_errors
 def set_employee(emp_no, first_name, last_name, birth_date, gender, hire_date, salary, dept_no):
     with mysql.db_read_session() as session:
-        data = []
-        sql = ' UPDATE employees, departments, salaries \
-            SET employees.first_name = "{first_name}", employees.last_name = "{last_name}", employees.birth_date = "{birth_date}", employees.gender = "{gender}", employees.hire_date = "{hire_date}", salaries.salary = {salary}, departments.dept_no = "{dept_no}" \
-            WHERE employees.emp_no = {emp_no};'.format(emp_no=emp_no, first_name = str(first_name), last_name = str(last_name), birth_date = str(birth_date), gender = str(gender), hire_date = str(hire_date), salary = salary, dept_no = str(dept_no))
-        session.execute(sql)
+        sql1 = ' UPDATE employees \
+            SET first_name = "{first_name}", last_name = "{last_name}", birth_date = "{birth_date}", gender = "{gender}", hire_date = "{hire_date}" \
+            WHERE emp_no = {emp_no};'.format(emp_no=emp_no, first_name = str(first_name), last_name = str(last_name), birth_date = str(birth_date), gender = str(gender), hire_date = str(hire_date))
+        sql2 = ' UPDATE salaries \
+            SET salary = {salary}\
+            WHERE emp_no = {emp_no};'.format(emp_no=emp_no, salary=salary)
+        sql3 = 'UPDATE departments \
+            SET dept_no = "{dept_no}"\
+            WHERE emp_no ={emp_no};'.format(emp_no=emp_no, dept_no=str(dept_no))
+        session.execute(sql1)
+        session.execute(sql2)
+        session.execute(sql3)
         emp_response = session.commit()
-        return emp_response
+        return "Updated Old Employee Record with New Successfully!!"
