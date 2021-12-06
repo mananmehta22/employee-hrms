@@ -1,6 +1,4 @@
-from employee import handlers
-
+"""Application File."""
 from employee import app
 
 app = app.app
-
