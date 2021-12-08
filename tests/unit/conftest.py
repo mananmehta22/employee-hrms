@@ -1,13 +1,14 @@
+"""Test Configuration."""
 from unittest.mock import MagicMock
 
 import pytest
-import os
 
 from employee import app
-from flask import Flask
+
 
 @pytest.fixture
 def context():
+    """Return flask app context, including a mock logger."""
     import application
 
     class MockLog:
@@ -29,17 +30,20 @@ def context():
 
 @pytest.fixture
 def client():
+    """Create an api test client."""
     return app.app.test_client()
 
 
 @pytest.fixture
 def app_ctx(app):
+    """Create app context."""
     with app.app_context() as ctx:
         yield ctx
 
 
 @pytest.fixture
 def req_ctx(app):
+    """Create test request context."""
     with app.test_request_context() as ctx:
         yield ctx
 

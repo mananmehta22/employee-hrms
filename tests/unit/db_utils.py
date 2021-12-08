@@ -1,3 +1,4 @@
+"""Utilities for working with DB in tests."""
 from contextlib import contextmanager
 from functools import wraps
 import sys
@@ -5,11 +6,14 @@ from unittest import mock
 
 from employee import config
 from employee.connectors import mysql
-from employee.connectors.mysql import db_session
 
 
 def seed_models(models):
-   # import pdb; pdb.set_trace()
+    """Save the given model(s) to the DB.
+
+    Args:
+        models (list): list of model instances to save.
+    """
     if not hasattr(models, '__iter__'):
         models = [models]
 
@@ -25,6 +29,21 @@ def seed_models(models):
 
 
 def test_schema(function):
+    """Test schema.
+
+    Decorator that creates the test DB schema before a function call and
+    tears the schema down after the function call has finished.
+
+    This just creates the schema and does not seed data. Indvidual test cases
+    can use factories to seed data as needed.
+
+    Args:
+        Function (func): function to be called after creating the test schema.
+
+    Returns:
+        Function: The decorated function.
+
+    """
     @wraps(function)
     def call_function_within_db_context(*args, **kwargs):
         with mysql.db_session() as session:
@@ -48,6 +67,10 @@ def _exit_if_not_test_environment(session):
 
 
 def mock_db_session(mocker):
+    """Create a mock database session.
+
+    Also mock the db_session context manager to use the mock session.
+    """
     mock_session = mock.Mock(query=mock.Mock())
 
     @contextmanager

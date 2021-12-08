@@ -1,6 +1,8 @@
-from contextlib import contextmanager
+"""MySQL Connector."""
+import functools
 
-from flask import g
+from contextlib import contextmanager  # noqa
+
 from sqlalchemy import create_engine
 from sqlalchemy import exc
 from sqlalchemy.ext.declarative import declarative_base
@@ -9,10 +11,8 @@ from sqlalchemy.pool import QueuePool
 
 from employee import config
 
-import functools
 
-
-if config.POOL_CLASS == QueuePool:
+if config.PoolClass == QueuePool:
     print(config.EF_DB_URL)
     db_engine = create_engine(
         config.EF_DB_URL, pool_size=config.POOL_SIZE,
@@ -23,7 +23,7 @@ else:
     db_engine = create_engine(
         config.EF_DB_URL,
         connect_args=config.CONNECT_ARGS,
-        poolclass=config.POOL_CLASS)
+        poolclass=config.PoolClass)
 _db_session = sessionmaker(bind=db_engine)
 
 BaseModel = declarative_base()
@@ -31,6 +31,7 @@ BaseModel = declarative_base()
 
 @contextmanager
 def db_session():
+    """Database session."""
     session = _db_session()
     try:
         yield session
@@ -44,6 +45,7 @@ def db_session():
 
 @contextmanager
 def db_read_session():
+    """Database Read session."""
     session = _db_session()
     try:
         yield session
@@ -52,7 +54,9 @@ def db_read_session():
     finally:
         session.close()
 
+
 def wrap_db_errors(function):
+    """Database Error Function."""
     @functools.wraps(function)
     def call_function_with_error_handling(*args, **kwargs):
         try:

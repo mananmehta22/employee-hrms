@@ -1,11 +1,14 @@
+"""Factory for the Departments model."""
 import factory
 
 from employee.models.emp_info import Departments
 
 
 class DepartmentsFactory(factory.Factory):
+    """Factory for creating Departments instances for testing."""
 
     class Meta:
+        """Meta definition for the Departments factory."""
 
         model = Departments
 

@@ -1,0 +1,4 @@
+[flake8]
+application-import-names=employee, tests
+import-order-style=google
+max-line-length = 100
