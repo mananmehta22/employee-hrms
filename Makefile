@@ -18,5 +18,5 @@ test:
 test_unit:
 	py.test \
 		-vv \
-		--cov users tests/unit/ \
+		--cov employee tests/unit/ \
 		--cov-report xml
