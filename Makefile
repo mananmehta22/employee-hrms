@@ -6,7 +6,7 @@ dev:
 
 pip_dev:
 	pip install --upgrade pip
-	python -m venv tutorial-env
+	python -m venv env
 	pip install -r requirements.txt -r requirements-dev.txt --use-deprecated=legacy-resolver
 
 lint:
